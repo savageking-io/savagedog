@@ -126,6 +126,10 @@ func main() {
 func Serve(c *cli.Context) error {
 	SetLogLevel()
 	log.Infof("Start daemon")
+	if ConfigFilepath == "" {
+		log.Errorf("Config file not specified. Use --config")
+		return fmt.Errorf("config file not specified")
+	}
 	config := new(Config)
 	if err := ReadConfig(ConfigFilepath, &config); err != nil {
 		log.Fatalf("Can't initialize daemon: %s", err)

@@ -20,6 +20,7 @@ type Discord struct {
 }
 
 func (d *Discord) Init(config *DiscordConfig) error {
+	log.Traceln("Discord::Init")
 	if config == nil {
 		return fmt.Errorf("config is nil")
 	}
@@ -50,6 +51,7 @@ func (d *Discord) Init(config *DiscordConfig) error {
 }
 
 func (d *Discord) RegisterChannelForService(serviceName string, channelName string) error {
+	log.Traceln("Discord::RegisterChannelForService", serviceName, channelName)
 	if d.session == nil {
 		return fmt.Errorf("session is nil")
 	}
@@ -67,6 +69,7 @@ func (d *Discord) RegisterChannelForService(serviceName string, channelName stri
 }
 
 func (d *Discord) SetServiceAuthor(serviceName, author string) error {
+	log.Traceln("Discord::SetServiceAuthor", serviceName, author)
 	if author == "" {
 		return fmt.Errorf("author is empty")
 	}
@@ -76,6 +79,7 @@ func (d *Discord) SetServiceAuthor(serviceName, author string) error {
 }
 
 func (d *Discord) SetServiceAuthorUrl(serviceName, url string) error {
+	log.Traceln("Discord::SetServiceAuthorUrl", serviceName, url)
 	if url == "" {
 		return fmt.Errorf("url is empty")
 	}
@@ -84,6 +88,7 @@ func (d *Discord) SetServiceAuthorUrl(serviceName, url string) error {
 }
 
 func (d *Discord) SetServiceAuthorImage(serviceName, image string) error {
+	log.Traceln("Discord::SetServiceAuthorImage", serviceName, image)
 	if image == "" {
 		return fmt.Errorf("image is empty")
 	}
@@ -92,6 +97,7 @@ func (d *Discord) SetServiceAuthorImage(serviceName, image string) error {
 }
 
 func (d *Discord) verifyChannel(channelName string) (bool, string) {
+	log.Traceln("Discord::verifyChannel", channelName)
 	if d.guildId == "" {
 		return false, ""
 	}
@@ -109,6 +115,7 @@ func (d *Discord) verifyChannel(channelName string) (bool, string) {
 }
 
 func (d *Discord) Close() error {
+	log.Traceln("Discord::Close")
 	if d.session == nil {
 		return nil
 	}
@@ -116,6 +123,7 @@ func (d *Discord) Close() error {
 }
 
 func (d *Discord) SendMessage(service string, msg *proto.NotificationMessage) error {
+	log.Traceln("Discord::SendMessage", service)
 	if msg == nil {
 		return fmt.Errorf("message is nil")
 	}
@@ -190,6 +198,7 @@ func (d *Discord) SendMessage(service string, msg *proto.NotificationMessage) er
 }
 
 func hexColorToInt(color string) (int, error) {
+	log.Traceln("Discord::hexColorToInt", color)
 	color = strings.TrimPrefix(color, "#")
 
 	if len(color) != 6 {

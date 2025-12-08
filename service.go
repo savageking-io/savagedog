@@ -19,7 +19,7 @@ type DogService struct {
 }
 
 func (d *DogService) Notification(ctx context.Context, req *proto.NotificationMessage) (*proto.NotificationResponse, error) {
-	log.Traceln("DogService::Notification %+v", req)
+	log.Tracef("DogService::Notification %+v", req)
 	if d.discord == nil {
 		return &proto.NotificationResponse{Code: 1, ErrorText: "Discord is nil"}, fmt.Errorf("discord is nil")
 	}
