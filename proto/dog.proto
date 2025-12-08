@@ -17,7 +17,9 @@ message NotificationMessage {
   string header = 2;
   string content = 3;
   string sender = 4;
-  repeated MessageField fields = 5;
+  string url = 5;
+  string color = 6;
+  repeated MessageField fields = 7;
 }
 
 message NotificationResponse {

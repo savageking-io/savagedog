@@ -29,4 +29,4 @@ COPY --from=builder /out/daemon.yaml /etc/daemon.yaml
 
 EXPOSE 12005
 
-ENTRYPOINT ["/usr/local/bin/savagedog", "serve", "--config", "/etc/daemon.yaml"]
+ENTRYPOINT ["/usr/local/bin/savagedog", "serve", "--config", "/etc/daemon.yaml", "--log", "trace"]

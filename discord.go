@@ -2,21 +2,32 @@ package main
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/savageking-io/savagedog/proto"
 )
 
 type Discord struct {
-	session    *discordgo.Session
-	guildId    string
-	channelIds map[string]string
+	session      *discordgo.Session
+	guildId      string
+	channelIds   map[string]string // Map of service -> discord channel
+	authors      map[string]string // Author names [Service]Name
+	authorUrls   map[string]string // Author URLs [Service]URL
+	authorImages map[string]string // Author Images [Service]Image
 }
 
 func (d *Discord) Init(config *DiscordConfig) error {
 	if config == nil {
 		return fmt.Errorf("config is nil")
 	}
+
+	d.channelIds = make(map[string]string)
+	d.authors = make(map[string]string)
+	d.authorUrls = make(map[string]string)
+	d.authorImages = make(map[string]string)
 
 	var err error
 	d.session, err = discordgo.New("Bot " + config.Token)
@@ -53,6 +64,31 @@ func (d *Discord) RegisterChannelForService(serviceName string, channelName stri
 		return nil
 	}
 	return fmt.Errorf("channel %s not found", channelName)
+}
+
+func (d *Discord) SetServiceAuthor(serviceName, author string) error {
+	if author == "" {
+		return fmt.Errorf("author is empty")
+	}
+
+	d.authors[serviceName] = author
+	return nil
+}
+
+func (d *Discord) SetServiceAuthorUrl(serviceName, url string) error {
+	if url == "" {
+		return fmt.Errorf("url is empty")
+	}
+	d.authorUrls[serviceName] = url
+	return nil
+}
+
+func (d *Discord) SetServiceAuthorImage(serviceName, image string) error {
+	if image == "" {
+		return fmt.Errorf("image is empty")
+	}
+	d.authorImages[serviceName] = image
+	return nil
 }
 
 func (d *Discord) verifyChannel(channelName string) (bool, string) {
@@ -93,8 +129,39 @@ func (d *Discord) SendMessage(service string, msg *proto.NotificationMessage) er
 		Embed: &discordgo.MessageEmbed{},
 	}
 
+	authorName, authorExist := d.authors[service]
+	authorUrl, authorUrlExist := d.authorUrls[service]
+	authorImage, authorImageExist := d.authorImages[service]
+	if authorExist || authorUrlExist || authorImageExist {
+		m.Embed.Author = &discordgo.MessageEmbedAuthor{}
+	}
+
+	if authorExist && authorName != "" {
+		m.Embed.Author.Name = authorName
+	}
+
+	if authorUrlExist && authorUrl != "" {
+		m.Embed.Author.URL = authorUrl
+	}
+
+	if authorImageExist && authorImage != "" {
+		m.Embed.Author.IconURL = authorImage
+	}
+
+	if msg.Color != "" {
+		var err error
+		m.Embed.Color, err = hexColorToInt(msg.Color)
+		if err != nil {
+			log.Errorf("Failed to parse color %s: %v", msg.Color, err)
+		}
+	}
+
 	if msg.Header != "" {
 		m.Embed.Title = msg.Header
+	}
+
+	if msg.Url != "" {
+		m.Embed.URL = msg.Url
 	}
 
 	if msg.Content != "" {
@@ -120,4 +187,19 @@ func (d *Discord) SendMessage(service string, msg *proto.NotificationMessage) er
 	}
 
 	return err
+}
+
+func hexColorToInt(color string) (int, error) {
+	color = strings.TrimPrefix(color, "#")
+
+	if len(color) != 6 {
+		return 0, fmt.Errorf("invalid hex color: must be 6 digits, got %s", color)
+	}
+
+	value, err := strconv.ParseInt(color, 16, 32)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse hex color %s: %v", color, err)
+	}
+
+	return int(value), nil
 }
