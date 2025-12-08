@@ -64,14 +64,12 @@ func main() {
 					Usage:       "Destination to send notification to",
 					Value:       Dest,
 					Destination: &Dest,
-					Required:    true,
 				},
 				cli.StringFlag{
 					Name:        "from",
 					Usage:       "Sender identifier, must match one in a backend",
 					Value:       From,
 					Destination: &From,
-					Required:    true,
 				},
 				cli.StringFlag{
 					Name:        "header",
