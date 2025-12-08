@@ -5,7 +5,7 @@ var (
 	ConfigFilepath       = "savagedog.yaml"
 	ClientConfigFilePath = ""
 	LogLevel             = "info"
-	Dest                 = "localhost:12005"
+	Dest                 = ""
 	From                 = ""
 	Header               = ""
 	Content              = ""
