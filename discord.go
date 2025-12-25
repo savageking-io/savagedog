@@ -45,6 +45,10 @@ func (d *Discord) Init(config *DiscordConfig) error {
 		return fmt.Errorf("more than one guild found, but only one discord server supported")
 	}
 
+	if len(d.session.State.Guilds) == 0 {
+		return fmt.Errorf("no guild found, make sure you are in a discord server")
+	}
+
 	d.guildId = d.session.State.Guilds[0].ID
 
 	return nil
